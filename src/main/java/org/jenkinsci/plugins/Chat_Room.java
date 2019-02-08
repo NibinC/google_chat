@@ -62,6 +62,34 @@ public class Chat_Room extends Notifier {
   return true;
  }
 
+    @Override
+    public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath workspace, @Nonnull Launcher launcher, @Nonnull TaskListener listener) {
+
+       
+  try {
+  	 EnvVars envVars = build.getEnvironment(listener); 
+	 String job = envVars.get("JOB_NAME");
+	 listener.getLogger().println("Executon finished for : "+job);
+     String message = " JOB_NAME : **"+job+"# "+
+    		  			envVars.get("BUILD_NUMBER")+"** "+
+    		  			" STATUS : **_"+ build.getResult()+"_**"+
+    		  			" Duration: **_"+build.getTimestampString()+"_**"+
+    		  			" URL: "+envVars.get("BUILD_URL");
+     listener.getLogger().println("Build details : "+message);
+     listener.getLogger().println("Sending build details to google chat group..");
+     boolean b =sendChatMessage(listener,message);
+     if(b==true){
+	  listener.getLogger().println("Build result successfully send to google chat group..");
+     }else{
+      listener.getLogger().println("Error occured while sending message to google chat group");
+     }
+	  
+  	} catch (Exception e) {
+  		  	listener.getLogger().printf("Error Occurred .....: %s ", e);
+  	}
+    }	
+	
+	
  @Override
  public DescriptorImpl getDescriptor() 
  {
